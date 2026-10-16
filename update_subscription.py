@@ -121,8 +121,8 @@ def main():
     with open(os.path.join(BASE_DIR, "sub_premium_b64.txt"), "w", encoding="utf-8") as f:
         f.write(b64_prem + "\n")
 
-    # 4. Continents
-    continents = ["Europe", "Americas", "Asia", "Africa", "Oceania"]
+    # 4. Continents (Separated North & South America, plus combined Americas fallback)
+    continents = ["Europe", "North America", "South America", "Americas", "Asia", "Africa", "Oceania"]
     for cont in continents:
         cont_nodes = []
         for s in servers:
@@ -132,7 +132,7 @@ def main():
                 for idx, ip in enumerate(ips):
                     cont_nodes.append(generate_node_url(s, ip, sub_index=idx, total_ips=len(ips)))
 
-        c_name = cont.lower()
+        c_name = cont.lower().replace(" ", "_")
         with open(os.path.join(BASE_DIR, f"sub_{c_name}.txt"), "w", encoding="utf-8") as f:
             f.write("\n".join(cont_nodes) + "\n")
         b64_cont = base64.b64encode("\n".join(cont_nodes).encode("utf-8")).decode("utf-8")

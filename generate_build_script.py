@@ -35,7 +35,7 @@ code = code.replace(
     '<span id="stat-total" class="stat-value">782</span>'
 )
 
-# 3. Add Tier Chips above continent-chips
+# 3. Add Tier Chips and split North/South America in continent-chips
 tier_chips_html = """            <!-- Tier Filter Chips -->
             <div class="chips-scroll" id="tier-chips" style="margin-bottom: 8px;">
                 <button class="chip active" data-tier="all">🌐 All Tiers (782)</button>
@@ -43,7 +43,26 @@ tier_chips_html = """            <!-- Tier Filter Chips -->
                 <button class="chip" data-tier="premium">💎 Plus / Premium (732)</button>
             </div>
 """
-code = code.replace('<div class="chips-scroll" id="continent-chips">', tier_chips_html + '            <div class="chips-scroll" id="continent-chips">')
+old_continent_chips = """            <div class="chips-scroll" id="continent-chips">
+                <button class="chip active" data-continent="All">All</button>
+                <button class="chip" data-continent="Europe">Europe</button>
+                <button class="chip" data-continent="Americas">Americas</button>
+                <button class="chip" data-continent="Asia">Asia</button>
+                <button class="chip" data-continent="Africa">Africa</button>
+                <button class="chip" data-continent="Oceania">Oceania</button>
+            </div>"""
+
+new_continent_chips = """            <div class="chips-scroll" id="continent-chips">
+                <button class="chip active" data-continent="All">All (782)</button>
+                <button class="chip" data-continent="Europe">Europe (273)</button>
+                <button class="chip" data-continent="North America">North America (289)</button>
+                <button class="chip" data-continent="South America">South America (26)</button>
+                <button class="chip" data-continent="Asia">Asia (102)</button>
+                <button class="chip" data-continent="Africa">Africa (65)</button>
+                <button class="chip" data-continent="Oceania">Oceania (27)</button>
+            </div>"""
+
+code = code.replace(old_continent_chips, tier_chips_html + new_continent_chips)
 
 # 4. Add selectedTier to App state
 code = code.replace(
@@ -184,11 +203,12 @@ new_modal_sub_scope = """                <div class="modal-grid-2" style="margin
                         <label for="sub-scope-select">Region / Continent</label>
                         <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                             <option value="all">🌐 Global / All</option>
-                            <option value="europe">🇪🇺 Europe</option>
-                            <option value="asia">🌏 Asia</option>
-                            <option value="americas">🌎 Americas</option>
-                            <option value="africa">🌍 Africa</option>
-                            <option value="oceania">🇦🇺 Oceania</option>
+                            <option value="europe">🇪🇺 Europe (273 Nodes)</option>
+                            <option value="north_america">🌎 North America (289 Nodes)</option>
+                            <option value="south_america">🌎 South America (26 Nodes)</option>
+                            <option value="asia">🌏 Asia (102 Nodes)</option>
+                            <option value="africa">🌍 Africa (65 Nodes)</option>
+                            <option value="oceania">🇦🇺 Oceania (27 Nodes)</option>
                         </select>
                     </div>
                 </div>"""
@@ -307,8 +327,9 @@ new_dev_sub_actions = """                        <div class="sub-actions-row">
                                 <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                                     <option value="all">🌐 All</option>
                                     <option value="europe">🇪🇺 Europe</option>
+                                    <option value="north_america">🌎 North America</option>
+                                    <option value="south_america">🌎 South America</option>
                                     <option value="asia">🌏 Asia</option>
-                                    <option value="americas">🌎 Americas</option>
                                     <option value="africa">🌍 Africa</option>
                                     <option value="oceania">🇦🇺 Oceania</option>
                                 </select>
@@ -403,7 +424,7 @@ old_dev_name_line = """                            '<strong style="font-size: 12
 new_dev_name_line = """                            '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
                             (dev.tier === "free" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #10b981;">🆓 Free</span>' : (dev.tier === "premium" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(109, 74, 255, 0.2); color: #a78bfa;">💎 Plus</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">🌐 All</span>')) +
                             (dev.obfs === "none" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(234, 179, 8, 0.2); color: #eab308;">🌐 WireGuard</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🛡️ AWG</span>') +
-                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region || "all") + ')</span>' +"""
+                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region ? escapeHtml(dev.region.replace(/_/g, " ")) : "all") + ')</span>' +"""
 
 code = code.replace(old_dev_name_line, new_dev_name_line)
 

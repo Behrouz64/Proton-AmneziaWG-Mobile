@@ -1087,19 +1087,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         <!-- Continent Chips & Search -->
         <section class="filter-section">
-                        <!-- Tier Filter Chips -->
+            <!-- Tier Filter Chips -->
             <div class="chips-scroll" id="tier-chips" style="margin-bottom: 8px;">
                 <button class="chip active" data-tier="all">🌐 All Tiers (782)</button>
                 <button class="chip" data-tier="free">🆓 Free Nodes (50)</button>
                 <button class="chip" data-tier="premium">💎 Plus / Premium (732)</button>
             </div>
             <div class="chips-scroll" id="continent-chips">
-                <button class="chip active" data-continent="All">All</button>
-                <button class="chip" data-continent="Europe">Europe</button>
-                <button class="chip" data-continent="Americas">Americas</button>
-                <button class="chip" data-continent="Asia">Asia</button>
-                <button class="chip" data-continent="Africa">Africa</button>
-                <button class="chip" data-continent="Oceania">Oceania</button>
+                <button class="chip active" data-continent="All">All (782)</button>
+                <button class="chip" data-continent="Europe">Europe (273)</button>
+                <button class="chip" data-continent="North America">North America (289)</button>
+                <button class="chip" data-continent="South America">South America (26)</button>
+                <button class="chip" data-continent="Asia">Asia (102)</button>
+                <button class="chip" data-continent="Africa">Africa (65)</button>
+                <button class="chip" data-continent="Oceania">Oceania (27)</button>
             </div>
 
             <div class="search-bar-row">
@@ -1271,11 +1272,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         <label for="sub-scope-select">Region / Continent</label>
                         <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                             <option value="all">🌐 Global / All</option>
-                            <option value="europe">🇪🇺 Europe</option>
-                            <option value="asia">🌏 Asia</option>
-                            <option value="americas">🌎 Americas</option>
-                            <option value="africa">🌍 Africa</option>
-                            <option value="oceania">🇦🇺 Oceania</option>
+                            <option value="europe">🇪🇺 Europe (273 Nodes)</option>
+                            <option value="north_america">🌎 North America (289 Nodes)</option>
+                            <option value="south_america">🌎 South America (26 Nodes)</option>
+                            <option value="asia">🌏 Asia (102 Nodes)</option>
+                            <option value="africa">🌍 Africa (65 Nodes)</option>
+                            <option value="oceania">🇦🇺 Oceania (27 Nodes)</option>
                         </select>
                     </div>
                 </div>
@@ -1483,8 +1485,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                 <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                                     <option value="all">🌐 All</option>
                                     <option value="europe">🇪🇺 Europe</option>
+                                    <option value="north_america">🌎 North America</option>
+                                    <option value="south_america">🌎 South America</option>
                                     <option value="asia">🌏 Asia</option>
-                                    <option value="americas">🌎 Americas</option>
                                     <option value="africa">🌍 Africa</option>
                                     <option value="oceania">🇦🇺 Oceania</option>
                                 </select>
@@ -2565,7 +2568,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
                             (dev.tier === "free" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #10b981;">🆓 Free</span>' : (dev.tier === "premium" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(109, 74, 255, 0.2); color: #a78bfa;">💎 Plus</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">🌐 All</span>')) +
                             (dev.obfs === "none" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(234, 179, 8, 0.2); color: #eab308;">🌐 WireGuard</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🛡️ AWG</span>') +
-                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region || "all") + ')</span>' +
+                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region ? escapeHtml(dev.region.replace(/_/g, " ")) : "all") + ')</span>' +
                         '</div>' +
                         statusBadge +
                     '</div>' +

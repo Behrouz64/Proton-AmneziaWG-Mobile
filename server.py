@@ -217,9 +217,21 @@ class MobileApiHandler(BaseHTTPRequestHandler):
         if path == "/api/servers":
             continent = query.get("continent", ["All"])[0]
             tier = query.get("tier", ["all"])[0]
+
+            def matches_cont(s_cont: str, q_cont: str) -> bool:
+                if not q_cont or q_cont.lower() == "all":
+                    return True
+                q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
+                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == s_norm:
+                    return True
+                if q_norm == "americas" and s_norm in ("north_america", "south_america"):
+                    return True
+                return False
+
             servers = [
                 c for c in GLOBAL_STATE.clusters
-                if (continent == "All" or c.continent == continent or (continent == "Americas" and c.continent in ("North America", "South America")))
+                if matches_cont(c.continent, continent)
                 and (tier == "all" or (tier == "free" and c.is_free) or (tier == "premium" and not c.is_free))
             ]
             resp = []
@@ -246,16 +258,28 @@ class MobileApiHandler(BaseHTTPRequestHandler):
             tier = query.get("tier", ["all"])[0]
             no_obfs = query.get("obfs", ["1"])[0] == "0" or query.get("noobfs", ["0"])[0] == "1" or query.get("preset", [""])[0] == "none"
             preset_to_use = ObfuscationPreset(name="Pure WireGuard", jc=0, jmin=0, jmax=0, s1=0, s2=0, h1=1, h2=2, h3=3, h4=4) if no_obfs else GLOBAL_STATE.preset
+
+            def matches_cont(s_cont: str, q_cont: str) -> bool:
+                if not q_cont or q_cont.lower() == "all":
+                    return True
+                q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
+                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == s_norm:
+                    return True
+                if q_norm == "americas" and s_norm in ("north_america", "south_america"):
+                    return True
+                return False
+
             working_clusters = [
                 c for c in GLOBAL_STATE.clusters
                 if c.effective_ip
-                and (continent == "All" or c.continent == continent or (continent == "Americas" and c.continent in ("North America", "South America")))
+                and matches_cont(c.continent, continent)
                 and (tier == "all" or (tier == "free" and c.is_free) or (tier == "premium" and not c.is_free))
             ]
             b64_sub = ConfigBuilder.generate_subscription_base64(
                 working_clusters, GLOBAL_STATE.credentials, preset_to_use, tier=tier
             )
-            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"proton_{tier}_{continent.lower()}_subscription.txt")
+            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"proton_{tier}_{continent.lower().replace(' ', '_')}_subscription.txt")
             return
 
         # 8. Single Config Download

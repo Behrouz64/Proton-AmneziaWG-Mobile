@@ -422,9 +422,13 @@ export default {
     }
 
     // Determine target subscription file from GitHub Pages
+    let cleanContinent = continent.replace(/[\s\-]+/g, "_");
+    if (cleanContinent === "na" || cleanContinent === "northamerica") cleanContinent = "north_america";
+    if (cleanContinent === "sa" || cleanContinent === "southamerica") cleanContinent = "south_america";
+
     let sourceFileName = "sub.txt";
-    if (["europe", "asia", "americas", "africa", "oceania"].includes(continent)) {
-      sourceFileName = `sub_${continent}.txt`;
+    if (["europe", "north_america", "south_america", "asia", "americas", "africa", "oceania"].includes(cleanContinent)) {
+      sourceFileName = `sub_${cleanContinent}.txt`;
     } else if (tier === "free") {
       sourceFileName = "sub_free.txt";
     } else if (tier === "premium") {

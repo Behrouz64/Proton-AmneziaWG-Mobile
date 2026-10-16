@@ -438,9 +438,17 @@ export default {
     const targetUrl = `${GITHUB_PAGES_BASE}/${sourceFileName}`;
 
     try {
-      const upstreamResp = await fetch(targetUrl, {
-        cf: { cacheTtl: 300, cacheEverything: true },
+      let upstreamResp = await fetch(targetUrl, {
+        cf: { cacheTtl: 120, cacheEverything: true },
       });
+
+      if (!upstreamResp.ok) {
+        // Fallback directly to raw.githubusercontent.com if GitHub Pages is updating or caching 404
+        const rawFallbackUrl = `https://raw.githubusercontent.com/Behrouz64/Proton-AmneziaWG-Mobile/master/${sourceFileName}`;
+        upstreamResp = await fetch(rawFallbackUrl, {
+          cf: { cacheTtl: 120, cacheEverything: true },
+        });
+      }
 
       if (!upstreamResp.ok) {
         return textResponse(`Error fetching upstream: ${upstreamResp.status}`, 502);

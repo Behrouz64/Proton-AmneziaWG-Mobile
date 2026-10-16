@@ -423,12 +423,12 @@ export default {
 
     // Determine target subscription file from GitHub Pages
     let sourceFileName = "sub.txt";
-    if (tier === "free") {
+    if (["europe", "asia", "americas", "africa", "oceania"].includes(continent)) {
+      sourceFileName = `sub_${continent}.txt`;
+    } else if (tier === "free") {
       sourceFileName = "sub_free.txt";
     } else if (tier === "premium") {
       sourceFileName = "sub_premium.txt";
-    } else if (["europe", "asia", "americas", "africa", "oceania"].includes(continent)) {
-      sourceFileName = `sub_${continent}.txt`;
     }
 
     const targetUrl = `${GITHUB_PAGES_BASE}/${sourceFileName}`;
@@ -443,10 +443,17 @@ export default {
       }
 
       const rawContent = await upstreamResp.text();
-      const lines = rawContent.split("\n").map(l => l.trim()).filter(l => l.startsWith("wg://"));
+      let lines = rawContent.split("\n").map(l => l.trim()).filter(l => l.startsWith("wg://"));
+
+      // Filter by tier (even if continent was selected)
+      if (tier === "free") {
+        lines = lines.filter(l => l.includes("%F0%9F%86%93") || l.includes("🆓"));
+      } else if (tier === "premium") {
+        lines = lines.filter(l => !l.includes("%F0%9F%86%93") && !l.includes("🆓"));
+      }
 
       if (lines.length === 0) {
-        return textResponse("No active nodes found in subscription.", 500);
+        return textResponse("No active nodes found matching your tier/continent criteria.", 404);
       }
 
       // Add status info banner if expiring
@@ -458,11 +465,15 @@ export default {
         infoNode = `wg://10.255.255.1:51820?publicKey=RY8jot0tZvug%2FzGd4SDBa5yFlMvhzYEto55QfMPSTG0%3D&privateKey=cF4B4RXTVug8PI2%2BmDxm8f1G%2FRo0NHuWeO6jyOWRp18%3D&ip=10.2.0.2#${infoRemark}`;
       }
 
+      const noObfs = params.get("obfs") === "0" || params.get("noobfs") === "1" || params.get("preset") === "none";
       const encodedDeviceKey = encodeURIComponent(deviceKey);
       const processedNodes = lines.map(line => {
         let node = line;
         if (deviceKey) {
           node = node.replace(/privateKey=[^&]+/, `privateKey=${encodedDeviceKey}`);
+        }
+        if (noObfs) {
+          node = node.replace(/&obfs=[^&]+/, "").replace(/&obfsParam=[^&#]+/, "");
         }
         return node;
       });

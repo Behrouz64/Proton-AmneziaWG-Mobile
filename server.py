@@ -244,6 +244,8 @@ class MobileApiHandler(BaseHTTPRequestHandler):
         if path == "/sub" or path.startswith("/sub"):
             continent = query.get("continent", ["All"])[0]
             tier = query.get("tier", ["all"])[0]
+            no_obfs = query.get("obfs", ["1"])[0] == "0" or query.get("noobfs", ["0"])[0] == "1" or query.get("preset", [""])[0] == "none"
+            preset_to_use = ObfuscationPreset(name="Pure WireGuard", jc=0, jmin=0, jmax=0, s1=0, s2=0, h1=1, h2=2, h3=3, h4=4) if no_obfs else GLOBAL_STATE.preset
             working_clusters = [
                 c for c in GLOBAL_STATE.clusters
                 if c.effective_ip
@@ -251,7 +253,7 @@ class MobileApiHandler(BaseHTTPRequestHandler):
                 and (tier == "all" or (tier == "free" and c.is_free) or (tier == "premium" and not c.is_free))
             ]
             b64_sub = ConfigBuilder.generate_subscription_base64(
-                working_clusters, GLOBAL_STATE.credentials, GLOBAL_STATE.preset, tier=tier
+                working_clusters, GLOBAL_STATE.credentials, preset_to_use, tier=tier
             )
             self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"proton_{tier}_{continent.lower()}_subscription.txt")
             return

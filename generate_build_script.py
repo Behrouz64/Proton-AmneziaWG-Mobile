@@ -51,7 +51,7 @@ code = code.replace(
     'selectedContinent: "All",\n        selectedTier: "all",'
 )
 
-# 5. Add tier filter logic to applyFilters
+# 5. Add tier filter logic and Americas handling to applyFilters
 old_filter_block = """        if (App.selectedContinent !== "All") {{
             list = list.filter(s => s.continent === App.selectedContinent);
         }}"""
@@ -63,37 +63,47 @@ new_filter_block = """        if (App.selectedTier === "free") {{
         }}
 
         if (App.selectedContinent !== "All") {{
-            list = list.filter(s => s.continent === App.selectedContinent);
+            if (App.selectedContinent === "Americas") {{
+                list = list.filter(s => s.continent === "Americas" || s.continent === "North America" || s.continent === "South America");
+            }} else {{
+                list = list.filter(s => s.continent === App.selectedContinent);
+            }}
         }}"""
 
 code = code.replace(old_filter_block, new_filter_block)
 
 # 6. Add tier chips event listener next to continent chips listener
-old_chips_listener = """        document.querySelectorAll("#continent-chips .chip").forEach(btn => {{
-            btn.addEventListener("click", () => {{
-                document.querySelectorAll("#continent-chips .chip").forEach(c => c.classList.remove("active"));
-                btn.classList.add("active");
-                App.selectedContinent = btn.dataset.continent;
-                applyFilters();
-            }});
+old_chips_listener = """        // Continent clicks
+        document.getElementById("continent-chips").addEventListener("click", (e) => {{
+            const chip = e.target.closest(".chip");
+            if (!chip) return;
+            document.querySelectorAll("#continent-chips .chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            App.selectedContinent = chip.dataset.continent;
+            applyFilters();
         }});"""
 
-new_chips_listener = """        document.querySelectorAll("#tier-chips .chip").forEach(btn => {{
-            btn.addEventListener("click", () => {{
+new_chips_listener = """        // Tier clicks
+        const tierChipsEl = document.getElementById("tier-chips");
+        if (tierChipsEl) {{
+            tierChipsEl.addEventListener("click", (e) => {{
+                const chip = e.target.closest(".chip");
+                if (!chip) return;
                 document.querySelectorAll("#tier-chips .chip").forEach(c => c.classList.remove("active"));
-                btn.classList.add("active");
-                App.selectedTier = btn.dataset.tier;
+                chip.classList.add("active");
+                App.selectedTier = chip.dataset.tier;
                 applyFilters();
             }});
-        }});
+        }}
 
-        document.querySelectorAll("#continent-chips .chip").forEach(btn => {{
-            btn.addEventListener("click", () => {{
-                document.querySelectorAll("#continent-chips .chip").forEach(c => c.classList.remove("active"));
-                btn.classList.add("active");
-                App.selectedContinent = btn.dataset.continent;
-                applyFilters();
-            }});
+        // Continent clicks
+        document.getElementById("continent-chips").addEventListener("click", (e) => {{
+            const chip = e.target.closest(".chip");
+            if (!chip) return;
+            document.querySelectorAll("#continent-chips .chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            App.selectedContinent = chip.dataset.continent;
+            applyFilters();
         }});"""
 
 code = code.replace(old_chips_listener, new_chips_listener)

@@ -219,7 +219,7 @@ class MobileApiHandler(BaseHTTPRequestHandler):
             tier = query.get("tier", ["all"])[0]
             servers = [
                 c for c in GLOBAL_STATE.clusters
-                if (continent == "All" or c.continent == continent)
+                if (continent == "All" or c.continent == continent or (continent == "Americas" and c.continent in ("North America", "South America")))
                 and (tier == "all" or (tier == "free" and c.is_free) or (tier == "premium" and not c.is_free))
             ]
             resp = []
@@ -247,7 +247,7 @@ class MobileApiHandler(BaseHTTPRequestHandler):
             working_clusters = [
                 c for c in GLOBAL_STATE.clusters
                 if c.effective_ip
-                and (continent == "All" or c.continent == continent)
+                and (continent == "All" or c.continent == continent or (continent == "Americas" and c.continent in ("North America", "South America")))
                 and (tier == "all" or (tier == "free" and c.is_free) or (tier == "premium" and not c.is_free))
             ]
             b64_sub = ConfigBuilder.generate_subscription_base64(

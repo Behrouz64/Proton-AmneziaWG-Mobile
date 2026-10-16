@@ -2,8 +2,6 @@ name = "proton-amneziawg-sub"
 main = "worker.js"
 compatibility_date = "2024-09-23"
 
-# Cloudflare KV binding for Multi-User and Device Synchronization
 [[kv_namespaces]]
 binding = "PROTON_KV"
-id = "YOUR_KV_NAMESPACE_ID"
-preview_id = "YOUR_KV_NAMESPACE_ID"
+id = "f74f8beb895a40fe85296d4a64126720"

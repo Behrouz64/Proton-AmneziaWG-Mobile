@@ -991,7 +991,11 @@ html_content = f'''<!DOCTYPE html>
         }}
 
         if (App.selectedContinent !== "All") {{
-            list = list.filter(s => s.continent === App.selectedContinent);
+            if (App.selectedContinent === "Americas") {{
+                list = list.filter(s => s.continent === "Americas" || s.continent === "North America" || s.continent === "South America");
+            }} else {{
+                list = list.filter(s => s.continent === App.selectedContinent);
+            }}
         }}
 
         if (App.searchTerm) {{
@@ -1249,6 +1253,19 @@ html_content = f'''<!DOCTYPE html>
         }}));
 
         document.getElementById("stat-total").textContent = App.servers.length;
+
+        // Tier clicks
+        const tierChipsEl = document.getElementById("tier-chips");
+        if (tierChipsEl) {{
+            tierChipsEl.addEventListener("click", (e) => {{
+                const chip = e.target.closest(".chip");
+                if (!chip) return;
+                document.querySelectorAll("#tier-chips .chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                App.selectedTier = chip.dataset.tier;
+                applyFilters();
+            }});
+        }}
 
         // Continent clicks
         document.getElementById("continent-chips").addEventListener("click", (e) => {{
